@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-green-arm: 29 105 17;
+  --color-white-arm: 243 243 243;
+  --color-gold-arm: 108 125 61;
+}
+
+@layer utilities {
+
+  .bg-primary-green {
+    background-color: rgb(var(--color-green-arm));
+  }
+  .text-primary-green {
+    color: rgb(var(--color-green-arm));
+  }
+  .bg-accent-gold {
+    background-color: rgb(var(--color-gold-arm));
+  }
+  .text-accent-gold {
+    color: rgb(var(--color-gold-arm));
+  }
+  .bg-light-bg {
+    background-color: rgb(var(--color-white-arm));
+  }
+  .color-title {
+    color: rgb(var(--color-green-arm))
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
