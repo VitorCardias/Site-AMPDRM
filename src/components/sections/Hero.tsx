@@ -1,6 +1,6 @@
 import { Titulo } from "../shared/Titulo";
 import imagem from "../../assets/hero.svg"
-import { InitialCard } from "../cards/initialCard";
+import { InitialCard } from "../cards/Card";
 import arte from "../../assets/icons/arte.svg"
 import natureza from "../../assets/icons/natureza.svg"
 import organizacao from "../../assets/icons/organizacao.svg"
