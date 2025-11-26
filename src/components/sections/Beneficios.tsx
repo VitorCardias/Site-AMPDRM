@@ -12,12 +12,12 @@ export const Beneficios: React.FC = () => {
     {
       icon: Leaf,
       title: 'Manutenção de Vias',
-      description: 'Cuidado contínuo com as vias públicas, realizando roçadas, podas e mantendo o visual do local limpo e harmonioso.',
+      description: 'Cuidado contínuo com as vias públicas, realizando roçadas no limite de até dois metros entre as ruas e as residências, podas, e mantendo o visual do local limpo e harmonioso.',
     },
     {
       icon: Droplet,
       title: 'Qualidade da Água',
-      description: 'Gestão e manutenção dos poços e caixas de abastecimento, com higienização e desinfecção semestral para garantir água potável.',
+      description: 'Gestão e manutenção dos poços e caixas de abastecimento, com higienização e desinfecção semestral para assegurar a qualidade da água distribuída aos moradores.',
     },
   ];
 
