@@ -40,11 +40,11 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <Mail className="w-5 h-5" />
-                <span className="text-gray-300">contato@amprm.com.br</span>
+                <span className="text-gray-300"> <a href="mailto:amrm@recantomaestro.com.br"> amrm@recantomaestro.com.br</a></span>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="w-5 h-5" />
-                <span className="text-gray-300">(55) 99999-9999</span>
+                <span className="text-gray-300"><a href="https://wa.me/555596803636" target="_blank" rel="noopener noreferrer">(55) 9680-3636</a></span>
               </li>
             </ul>
           </div>

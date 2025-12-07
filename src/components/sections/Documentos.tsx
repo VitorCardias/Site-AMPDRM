@@ -1,64 +1,114 @@
 import React, { useState } from 'react';
-import { FileText, Download, X, Loader2 } from 'lucide-react';
+import { FileText, Download, X, Loader2, AlertCircle } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { PdfDesligamento } from '../../templates/PdfDesligamento';
 import { PdfDesligamentoLocacao } from '../../templates/PdfDesligamentoLocacao';
+import { PdfAdmissaoPF } from '../../templates/PdfAdmissaoPF';
+import { PdfAdmissaoPJ } from '../../templates/PdfAdmissaoPJ';
+import { PdfAtualizacaoCadastral } from '../../templates/PdfAtualizaCadastro';
+
+// --- MÁSCARAS ---
+const masks = {
+  cpf: (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1');
+  },
+  cnpj: (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '$1.$2')
+      .replace(/(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1');
+  },
+  phone: (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{4,5})(\d{4})/, '$1-$2')
+      .replace(/(-\d{4})\d+?$/, '$1');
+  },
+  cep: (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .replace(/(-\d{3})\d+?$/, '$1');
+  },
+  date: (value: string) => value // Datas HTML já tem máscara nativa
+};
+
+// --- VALIDAÇÕES ---
+const validators = {
+  email: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+  textOnly: (value: string) => /^[a-zA-ZÀ-ÿ\s]*$/.test(value),
+  numberOnly: (value: string) => /^\d*$/.test(value),
+};
 
 type FieldConfig = {
   id: string;
   label: string;
-  type: 'text' | 'date' | 'select';
+  type: 'text' | 'date' | 'select' | 'email' | 'tel';
+  mask?: 'cpf' | 'cnpj' | 'phone' | 'cep';
+  validation?: 'email' | 'textOnly' | 'numberOnly';
   options?: { value: string; label: string }[];
   condition?: (formData: Record<string, string>) => boolean;
+  required?: boolean;
 };
 
 type DocConfig = {
   name: string;
   href: string;
-  type: 'static' | 'dynamic_desligamento' | 'dynamic_locacao_pj';
+  type: 'static' | 'dynamic_desligamento' | 'dynamic_locacao_pj' | 'dynamic_admissao_pf' | 'dynamic_admissao_pj' | 'dynamic_atualizacao';
   fields?: FieldConfig[];
 };
 
 export const Documentos: React.FC = () => {
   const [selectedDoc, setSelectedDoc] = useState<DocConfig | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({}); // Estado para erros
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // --- CONFIGURAÇÃO DOS DOCUMENTOS COM MÁSCARAS E VALIDAÇÕES ---
   const documentos: DocConfig[] = [
     { name: 'Regulamento Interno', href: '/pdf/Regulamento_Interno.pdf', type: 'static' },
     { name: 'Estatuto Social', href: '/pdf/Estatuto.pdf', type: 'static' },
     
-    // 1. DESLIGAMENTO POR ALIENAÇÃO (PF)
+    // 1. DESLIGAMENTO PF
     { 
       name: 'Requerimento de Desligamento por Alienação', 
       href: '#', 
       type: 'dynamic_desligamento',
       fields: [
-        { id: 'nome', label: 'Nome Completo', type: 'text' },
-        { id: 'nacionalidade', label: 'Nacionalidade', type: 'text' },
-        { id: 'estadoCivil', label: 'Estado Civil', type: 'text' },
-        { id: 'profissao', label: 'Profissão', type: 'text' },
-        { id: 'cpf', label: 'CPF', type: 'text' },
-        { id: 'rg', label: 'RG', type: 'text' },
-        { id: 'endereco', label: 'Endereço Completo', type: 'text' },
-        { id: 'municipio', label: 'Município', type: 'text' },
-        { id: 'cep', label: 'CEP', type: 'text' },
-        { id: 'ruaImovel', label: 'Rua do Imóvel Vendido', type: 'text' },
-        { id: 'distritoImovel', label: 'Distrito do Imóvel', type: 'text' },
-        { id: 'municipioImovel', label: 'Município do Imóvel', type: 'text' },
-        { id: 'matriculaImovel', label: 'Matrícula do Imóvel', type: 'text' },
-        { id: 'dataVenda', label: 'Data da Venda', type: 'date' },
-        { id: 'nomeAdquirente', label: 'Nome do Comprador', type: 'text' },
-        { id: 'estadoCivilAdquirente', label: 'Estado Civil (Comprador)', type: 'text' },
-        { id: 'profissaoAdquirente', label: 'Profissão (Comprador)', type: 'text' },
-        { id: 'cpfAdquirente', label: 'CPF (Comprador)', type: 'text' },
-        { id: 'rgAdquirente', label: 'RG (Comprador)', type: 'text' },
+        { id: 'nome', label: 'Nome Completo', type: 'text', validation: 'textOnly', required: true },
+        { id: 'nacionalidade', label: 'Nacionalidade', type: 'text', validation: 'textOnly', required: true },
+        { id: 'estadoCivil', label: 'Estado Civil', type: 'text', validation: 'textOnly', required: true },
+        { id: 'profissao', label: 'Profissão', type: 'text', validation: 'textOnly', required: true },
+        { id: 'cpf', label: 'CPF', type: 'text', mask: 'cpf', required: true },
+        { id: 'rg', label: 'RG', type: 'text', validation: 'numberOnly', required: true },
+        { id: 'endereco', label: 'Endereço Completo', type: 'text', required: true },
+        { id: 'municipio', label: 'Município', type: 'text', validation: 'textOnly', required: true },
+        { id: 'cep', label: 'CEP', type: 'text', mask: 'cep', required: true },
+        { id: 'ruaImovel', label: 'Rua do Imóvel Vendido', type: 'text', required: true },
+        { id: 'distritoImovel', label: 'Distrito do Imóvel', type: 'text', required: true },
+        { id: 'municipioImovel', label: 'Município do Imóvel', type: 'text', validation: 'textOnly', required: true },
+        { id: 'matriculaImovel', label: 'Matrícula do Imóvel', type: 'text', required: true },
+        { id: 'dataVenda', label: 'Data da Venda', type: 'date', required: true },
+        { id: 'nomeAdquirente', label: 'Nome do Comprador', type: 'text', validation: 'textOnly', required: true },
+        { id: 'estadoCivilAdquirente', label: 'Estado Civil (Comprador)', type: 'text', validation: 'textOnly' },
+        { id: 'profissaoAdquirente', label: 'Profissão (Comprador)', type: 'text', validation: 'textOnly' },
+        { id: 'cpfAdquirente', label: 'CPF (Comprador)', type: 'text', mask: 'cpf', required: true },
+        { id: 'rgAdquirente', label: 'RG (Comprador)', type: 'text', validation: 'numberOnly' },
         { id: 'enderecoAdquirente', label: 'Endereço (Comprador)', type: 'text' },
-        { id: 'municipioAdquirente', label: 'Município (Comprador)', type: 'text' },
-        { id: 'cepAdquirente', label: 'CEP (Comprador)', type: 'text' },
-        { id: 'telefoneAdquirente', label: 'Telefone (Comprador)', type: 'text' },
-        { id: 'emailAdquirente', label: 'Email (Comprador)', type: 'text' },
+        { id: 'municipioAdquirente', label: 'Município (Comprador)', type: 'text', validation: 'textOnly' },
+        { id: 'cepAdquirente', label: 'CEP (Comprador)', type: 'text', mask: 'cep' },
+        { id: 'telefoneAdquirente', label: 'Telefone (Comprador)', type: 'tel', mask: 'phone' },
+        { id: 'emailAdquirente', label: 'Email (Comprador)', type: 'email', validation: 'email' },
         { 
           id: 'tipoPendencia', 
           label: 'Situação de Pendências Financeiras', 
@@ -78,34 +128,104 @@ export const Documentos: React.FC = () => {
       ]
     },
 
-    // 2. NOVO DOCUMENTO: DESLIGAMENTO POR LOCAÇÃO (PJ)
+    // 2. DESLIGAMENTO PJ
     {
       name: 'Requerimento de Desligamento por Locação (PJ)',
       href: '#',
       type: 'dynamic_locacao_pj',
       fields: [
-        // Comunicante (Empresa)
-        { id: 'razaoSocial', label: 'Razão Social (Sua Empresa)', type: 'text' },
-        { id: 'cnpj', label: 'CNPJ (Sua Empresa)', type: 'text' },
-        { id: 'endereco', label: 'Endereço da Sede', type: 'text' },
-        { id: 'municipio', label: 'Município', type: 'text' },
-        { id: 'cep', label: 'CEP', type: 'text' },
-
-        // Imóvel
+        { id: 'razaoSocial', label: 'Razão Social (Sua Empresa)', type: 'text', required: true },
+        { id: 'cnpj', label: 'CNPJ (Sua Empresa)', type: 'text', mask: 'cnpj', required: true },
+        { id: 'endereco', label: 'Endereço da Sede', type: 'text', required: true },
+        { id: 'municipio', label: 'Município', type: 'text', validation: 'textOnly' },
+        { id: 'cep', label: 'CEP', type: 'text', mask: 'cep' },
         { id: 'ruaImovel', label: 'Rua do Imóvel Locado', type: 'text' },
         { id: 'distritoImovel', label: 'Distrito do Imóvel', type: 'text' },
-        { id: 'municipioImovel', label: 'Município do Imóvel', type: 'text' },
+        { id: 'municipioImovel', label: 'Município do Imóvel', type: 'text', validation: 'textOnly' },
         { id: 'matriculaImovel', label: 'Matrícula do Imóvel', type: 'text' },
-        { id: 'dataInicioLocacao', label: 'Início da Locação', type: 'date' },
-
-        // Locatário (Inquilino PJ)
-        { id: 'razaoSocialLocatario', label: 'Razão Social (Locatário)', type: 'text' },
-        { id: 'cnpjLocatario', label: 'CNPJ (Locatário)', type: 'text' },
+        { id: 'dataInicioLocacao', label: 'Início da Locação', type: 'date', required: true },
+        { id: 'razaoSocialLocatario', label: 'Razão Social (Locatário)', type: 'text', required: true },
+        { id: 'cnpjLocatario', label: 'CNPJ (Locatário)', type: 'text', mask: 'cnpj', required: true },
         { id: 'enderecoLocatario', label: 'Endereço (Locatário)', type: 'text' },
-        { id: 'municipioLocatario', label: 'Município (Locatário)', type: 'text' },
-        { id: 'cepLocatario', label: 'CEP (Locatário)', type: 'text' },
-        { id: 'telefoneLocatario', label: 'Telefone (Locatário)', type: 'text' },
-        { id: 'emailLocatario', label: 'Email (Locatário)', type: 'text' },
+        { id: 'municipioLocatario', label: 'Município (Locatário)', type: 'text', validation: 'textOnly' },
+        { id: 'cepLocatario', label: 'CEP (Locatário)', type: 'text', mask: 'cep' },
+        { id: 'telefoneLocatario', label: 'Telefone (Locatário)', type: 'tel', mask: 'phone' },
+        { id: 'emailLocatario', label: 'Email (Locatário)', type: 'email', validation: 'email' },
+      ]
+    },
+
+    // 3. ADMISSÃO PF
+    {
+      name: 'Requerimento de Ingresso/Permanência (PF)',
+      href: '#',
+      type: 'dynamic_admissao_pf',
+      fields: [
+        { id: 'nome', label: 'Nome Completo', type: 'text', validation: 'textOnly', required: true },
+        { id: 'nacionalidade', label: 'Nacionalidade', type: 'text', validation: 'textOnly' },
+        { id: 'estadoCivil', label: 'Estado Civil', type: 'text', validation: 'textOnly' },
+        { id: 'profissao', label: 'Profissão', type: 'text', validation: 'textOnly' },
+        { id: 'cpf', label: 'CPF', type: 'text', mask: 'cpf', required: true },
+        { id: 'rg', label: 'RG', type: 'text', validation: 'numberOnly' },
+        { id: 'endereco', label: 'Endereço Completo', type: 'text' },
+        { id: 'municipio', label: 'Município', type: 'text', validation: 'textOnly' },
+        { id: 'cep', label: 'CEP', type: 'text', mask: 'cep' },
+        { id: 'telefone', label: 'Telefone', type: 'tel', mask: 'phone', required: true },
+        { id: 'email', label: 'Email', type: 'email', validation: 'email', required: true },
+        { 
+            id: 'tipoVinculo', 
+            label: 'Tipo de Vínculo', 
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'proprietario', label: 'Proprietário de Imóvel' },
+                { value: 'morador', label: 'Morador' },
+                { value: 'locatario', label: 'Locatário' },
+                { value: 'empresario', label: 'Empresário no Distrito' }
+            ]
+        },
+        { id: 'dataInicioVinculo', label: 'Vínculo desde (Data)', type: 'date', required: true },
+      ]
+    },
+
+    // 4. ADMISSÃO PJ
+    {
+      name: 'Requerimento de Ingresso/Permanência (PJ)',
+      href: '#',
+      type: 'dynamic_admissao_pj',
+      fields: [
+        { id: 'razaoSocial', label: 'Razão Social (Empresa)', type: 'text', required: true },
+        { id: 'cnpj', label: 'CNPJ', type: 'text', mask: 'cnpj', required: true },
+        { id: 'endereco', label: 'Endereço da Sede', type: 'text' },
+        { id: 'municipio', label: 'Município', type: 'text', validation: 'textOnly' },
+        { id: 'cep', label: 'CEP', type: 'text', mask: 'cep' },
+        { id: 'telefone', label: 'Telefone', type: 'tel', mask: 'phone', required: true },
+        { id: 'email', label: 'Email', type: 'email', validation: 'email', required: true },
+        { 
+            id: 'tipoVinculo', 
+            label: 'Tipo de Vínculo', 
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'proprietario', label: 'Proprietário de Imóvel' },
+                { value: 'morador', label: 'Morador' },
+                { value: 'locatario', label: 'Locatário' },
+                { value: 'empresario', label: 'Empresário no Distrito' }
+            ]
+        },
+        { id: 'dataInicioVinculo', label: 'Vínculo desde (Data)', type: 'date', required: true },
+      ]
+    },
+
+    // 5. ATUALIZAÇÃO CADASTRAL
+    {
+      name: 'Declaração de Atualização Cadastral',
+      href: '#',
+      type: 'dynamic_atualizacao',
+      fields: [
+        { id: 'nome', label: 'Nome do Associado', type: 'text', validation: 'textOnly', required: true },
+        { id: 'cpf', label: 'CPF', type: 'text', mask: 'cpf', required: true },
+        { id: 'telefone', label: 'Telefone (WhatsApp)', type: 'tel', mask: 'phone', required: true },
+        { id: 'email', label: 'E-mail Atualizado', type: 'email', validation: 'email', required: true },
       ]
     }
   ];
@@ -113,23 +233,94 @@ export const Documentos: React.FC = () => {
   const handleDocClick = (e: React.MouseEvent, doc: DocConfig) => {
     if (doc.type !== 'static') {
       e.preventDefault();
-      setFormData({}); 
+      setFormData({});
+      setFormErrors({}); 
       setSelectedDoc(doc);
     }
   };
 
-  const handleInputChange = (id: string, value: string) => {
+  const handleInputChange = (id: string, rawValue: string, mask?: FieldConfig['mask']) => {
+    let value = rawValue;
+
+    // Aplica máscara se existir
+    if (mask && masks[mask]) {
+      value = masks[mask](rawValue);
+    }
+
     setFormData(prev => ({ ...prev, [id]: value }));
+    
+    // Limpa erro ao digitar
+    if (formErrors[id]) {
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[id];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    if (!selectedDoc?.fields) return true;
+    
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    selectedDoc.fields.forEach(field => {
+      // Pula validação se o campo estiver oculto (conditional)
+      if (field.condition && !field.condition(formData)) return;
+
+      const value = formData[field.id] || '';
+
+      // 1. Validação de Obrigatório
+      if (field.required && !value.trim()) {
+        newErrors[field.id] = 'Este campo é obrigatório.';
+        isValid = false;
+      } 
+      // 2. Validações Específicas (apenas se tiver valor)
+      else if (value && field.validation) {
+        if (field.validation === 'email' && !validators.email(value)) {
+          newErrors[field.id] = 'Formato de e-mail inválido.';
+          isValid = false;
+        }
+        if (field.validation === 'textOnly' && !validators.textOnly(value)) {
+          newErrors[field.id] = 'Use apenas letras.';
+          isValid = false;
+        }
+        if (field.validation === 'numberOnly' && !validators.numberOnly(value)) {
+          newErrors[field.id] = 'Use apenas números.';
+          isValid = false;
+        }
+      }
+      // 3. Validação de Tamanho mínimo para máscaras (opcional, mas bom UX)
+      if (value && field.mask === 'cpf' && value.length < 14) {
+        newErrors[field.id] = 'CPF incompleto.';
+        isValid = false;
+      }
+      if (value && field.mask === 'cnpj' && value.length < 18) {
+        newErrors[field.id] = 'CNPJ incompleto.';
+        isValid = false;
+      }
+    });
+
+    setFormErrors(newErrors);
+    return isValid;
   };
 
   const generateDynamicPdf = async () => {
     if (!selectedDoc) return;
+    
+    // Roda validação antes de gerar
+    if (!validateForm()) {
+      return; 
+    }
+
     setIsGenerating(true);
 
     try {
       let blob: Blob | null = null;
 
-      // LÓGICA 1: DESLIGAMENTO ALIENAÇÃO (PF)
+      // ... (LÓGICA DE GERAÇÃO IGUAL AO ANTERIOR) ...
+      // 1. DESLIGAMENTO PF
       if (selectedDoc.type === 'dynamic_desligamento') {
         const dados = {
             nome: formData.nome,
@@ -162,7 +353,7 @@ export const Documentos: React.FC = () => {
         blob = await pdf(<PdfDesligamento data={dados} />).toBlob();
       } 
       
-      // LÓGICA 2: DESLIGAMENTO LOCAÇÃO (PJ)
+      // 2. DESLIGAMENTO PJ
       else if (selectedDoc.type === 'dynamic_locacao_pj') {
         const dadosLocacao = {
           razaoSocial: formData.razaoSocial,
@@ -186,30 +377,80 @@ export const Documentos: React.FC = () => {
         blob = await pdf(<PdfDesligamentoLocacao data={dadosLocacao} />).toBlob();
       }
 
+      // 3. ADMISSÃO PF
+      else if (selectedDoc.type === 'dynamic_admissao_pf') {
+        const dadosAdmissao = {
+            nome: formData.nome,
+            nacionalidade: formData.nacionalidade,
+            estadoCivil: formData.estadoCivil,
+            profissao: formData.profissao,
+            cpf: formData.cpf,
+            rg: formData.rg,
+            endereco: formData.endereco,
+            municipio: formData.municipio,
+            cep: formData.cep,
+            telefone: formData.telefone,
+            email: formData.email,
+            tipoVinculo: (formData.tipoVinculo || 'morador') as 'morador' | 'proprietario' | 'locatario' | 'empresario',
+            dataInicioVinculo: formData.dataInicioVinculo
+        };
+        blob = await pdf(<PdfAdmissaoPF data={dadosAdmissao} />).toBlob();
+      }
+
+      // 4. ADMISSÃO PJ
+      else if (selectedDoc.type === 'dynamic_admissao_pj') {
+        const dadosAdmissaoPJ = {
+            razaoSocial: formData.razaoSocial,
+            cnpj: formData.cnpj,
+            endereco: formData.endereco,
+            municipio: formData.municipio,
+            cep: formData.cep,
+            telefone: formData.telefone,
+            email: formData.email,
+            tipoVinculo: (formData.tipoVinculo || 'empresario') as 'empresario' | 'proprietario' | 'locatario' | 'morador',
+            dataInicioVinculo: formData.dataInicioVinculo
+        };
+        blob = await pdf(<PdfAdmissaoPJ data={dadosAdmissaoPJ} />).toBlob();
+      }
+
+      // 5. ATUALIZAÇÃO CADASTRAL
+      else if (selectedDoc.type === 'dynamic_atualizacao') {
+        const dadosAtualizacao = {
+            nome: formData.nome,
+            cpf: formData.cpf,
+            telefone: formData.telefone,
+            email: formData.email
+        };
+        blob = await pdf(<PdfAtualizacaoCadastral data={dadosAtualizacao} />).toBlob();
+      }
+
       if (blob) {
         saveAs(blob, `${selectedDoc.name.replace(/\s+/g, '_')}.pdf`);
         setSelectedDoc(null);
       }
     } catch (error) {
       console.error(error);
-      alert("Erro ao gerar PDF. Verifique se todos os campos estão preenchidos.");
+      alert("Erro ao gerar PDF.");
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <section className="py-20 bg-light-bg relative">
+    <section id='documentos' className="py-20 bg-light-bg relative">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Texto Explicativo */}
           <div className="max-w-md">
             <h2 className="text-3xl md:text-4xl font-bold text-primary-green mb-4">
-              Transparência e Acesso
+              Canais para Envio de Documentos:
             </h2>
             <p className="text-lg text-gray-600">
               Acesse e preencha os principais documentos da associação automaticamente.
             </p>
+            <ul className="mt-6 text-gray-700 list list-inside space-y-2">
+                <li><strong>Email:</strong> <a href="mailto:amrm@recantomaestro.com.br">amrm@recantomaestro.com.br</a></li>
+                <li><strong>WhatsApp:</strong> <a href="https://wa.me/555596803636" target="_blank" rel="noopener noreferrer">(55) 9680-3636</a></li>
+            </ul>
           </div>
          <div className="space-y-4">
             {documentos.map((doc) => (
@@ -246,10 +487,13 @@ export const Documentos: React.FC = () => {
 
                 return (
                   <div key={field.id} className="flex flex-col">
-                    <label className="text-sm font-semibold text-gray-700 mb-1">{field.label}</label>
+                    <label className="text-sm font-semibold text-gray-700 mb-1">
+                      {field.label} {field.required && <span className="text-red-500">*</span>}
+                    </label>
+                    
                     {field.type === 'select' ? (
                       <select 
-                        className="border border-gray-300 rounded p-2 outline-none focus:border-green-500"
+                        className={`border rounded p-2 outline-none focus:border-green-500 ${formErrors[field.id] ? 'border-red-500' : 'border-gray-300'}`}
                         onChange={(e) => handleInputChange(field.id, e.target.value)}
                         value={formData[field.id] || ''}
                       >
@@ -261,10 +505,21 @@ export const Documentos: React.FC = () => {
                     ) : (
                       <input
                         type={field.type}
-                        className="border border-gray-300 rounded p-2 outline-none focus:border-green-500"
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
+                        className={`border rounded p-2 outline-none focus:border-green-500 ${formErrors[field.id] ? 'border-red-500' : 'border-gray-300'}`}
+                        // AQUI É APLICADA A MÁSCARA AUTOMATICAMENTE
+                        onChange={(e) => handleInputChange(field.id, e.target.value, field.mask)}
                         value={formData[field.id] || ''}
+                        // Limitar tamanho máximo para campos mascarados
+                        maxLength={field.mask === 'cpf' ? 14 : field.mask === 'cnpj' ? 18 : field.mask === 'phone' ? 15 : undefined}
+                        placeholder={field.mask === 'phone' ? '(99) 99999-9999' : ''}
                       />
+                    )}
+                    
+                    {/* EXIBE MENSAGEM DE ERRO SE HOUVER */}
+                    {formErrors[field.id] && (
+                      <span className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <AlertCircle size={12} /> {formErrors[field.id]}
+                      </span>
                     )}
                   </div>
                 );
