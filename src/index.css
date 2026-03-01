@@ -26,6 +26,9 @@
   .color-title {
     color: rgb(var(--color-green-arm))
   }
+  .border-primary-green {
+    border-color: rgb(var(--color-green-arm));
+  }
 }
 
 html {

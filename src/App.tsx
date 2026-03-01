@@ -9,6 +9,7 @@ import { Sobre } from "./components/sections/Sobre";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
 
 import video from "./assets/videos/video_apresentacao.mp4"
+import { Mapa } from "./components/sections/Mapa";
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
         <Proposito />
         <Beneficios />
         <Documentos />
+        <Mapa />
       </Layout>
     </>
   )
