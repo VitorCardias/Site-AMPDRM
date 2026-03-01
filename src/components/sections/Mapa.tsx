@@ -116,12 +116,13 @@ export const Mapa: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Mapa */}
             <div className="w-full flex justify-center lg:justify-end">
-              <div className="rounded-lg shadow-xl overflow-hidden bg-white p-4 relative group">
+              <div className="rounded-lg shadow-xl bg-white p-4 relative group w-full max-w-xl">
                 <img 
                   src="./mapa.svg" 
                   alt="Mapa do Recanto Maestro" 
-                  className="w-full h-auto max-w-2xl transition-transform group-hover:scale-[1.02] cursor-pointer"
+                  className="w-full h-auto cursor-pointer rounded"
                   onClick={openModal}
+                  style={{ display: 'block' }}
                 />
                 <div className="absolute inset-0 bg-transparent hover:bg-black hover:bg-opacity-10 transition-all flex items-center justify-center pointer-events-none">
                   <span className="bg-white px-4 py-2 rounded-lg text-sm font-semibold text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
@@ -223,7 +224,7 @@ export const Mapa: React.FC = () => {
             {/* Imagem com Zoom */}
             <div 
               ref={imageRef}
-              className="overflow-hidden w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center p-4"
               onClick={(e) => e.stopPropagation()}
               onWheel={handleWheel}
               onMouseDown={handleMouseDown}
@@ -231,19 +232,31 @@ export const Mapa: React.FC = () => {
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseLeave}
               style={{
-                cursor: isDragging ? 'grabbing' : zoomLevel > 1 ? 'grab' : 'default'
+                cursor: isDragging ? 'grabbing' : zoomLevel > 1 ? 'grab' : 'default',
+                overflow: zoomLevel > 1 ? 'hidden' : 'visible'
               }}
             >
-              <img 
-                src="./mapa.svg" 
-                alt="Mapa do Recanto Maestro - Ampliado" 
-                className="transition-transform duration-100 select-none"
+              <div
+                className="transition-transform duration-100"
                 style={{ 
                   transform: `scale(${zoomLevel}) translate(${position.x / zoomLevel}px, ${position.y / zoomLevel}px)`,
                   transformOrigin: 'center center',
                 }}
-                draggable={false}
-              />
+              >
+                <img 
+                  src="./mapa.svg" 
+                  alt="Mapa do Recanto Maestro - Ampliado" 
+                  className="select-none"
+                  style={{ 
+                    maxWidth: 'min(80vw, 800px)',
+                    maxHeight: 'min(80vh, 800px)',
+                    width: 'auto',
+                    height: 'auto',
+                    display: 'block'
+                  }}
+                  draggable={false}
+                />
+              </div>
             </div>
           </div>
         </div>

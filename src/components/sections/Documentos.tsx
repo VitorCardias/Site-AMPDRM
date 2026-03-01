@@ -463,7 +463,7 @@ export const Documentos: React.FC = () => {
               >
                 <div className="flex items-center space-x-4">
                   <FileText className="w-6 h-6 text-accent-gold" />
-                  <span className="text-gray-700 font-medium">{doc.name}</span>
+                  <span className="text-gray-700 font-medium text-sm">{doc.name}</span>
                 </div>
                 <Download className="w-6 h-6 text-gray-400" />
               </a>
