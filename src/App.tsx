@@ -7,6 +7,7 @@ import { Home } from "./components/sections/Home";
 import { Proposito } from "./components/sections/Proposito";
 import { Sobre } from "./components/sections/Sobre";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
+import { WhatsIcon } from "./components/elements/WhatsIcon";
 
 import video from "./assets/videos/video_apresentacao.mp4"
 import { Mapa } from "./components/sections/Mapa";
@@ -57,6 +58,7 @@ function App() {
         <Documentos />
         <Mapa />
       </Layout>
+      <WhatsIcon />
     </>
   )
 }
