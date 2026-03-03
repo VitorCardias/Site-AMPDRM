@@ -13,7 +13,7 @@ export const Mapa: React.FC = () => {
     { num: 23, nome: "Pizzaria e Sorveteria La Giacobina, Empório Zoriano" },
     { num: 24, nome: "MB Farmácia" },
     { num: 25, nome: "Amfiteatro AMF" },
-    { num: 26, nome: "Casa dos estudantesa" },
+    { num: 26, nome: "Casa dos estudantes" },
     { num: 27, nome: "Grupo Meta" },
     { num: 28, nome: "Fundação Antonio Meneghetti, Oniotan do Brasil Ltda." },
     { num: 29, nome: "Condomínio Residencial" },
@@ -92,7 +92,7 @@ export const Mapa: React.FC = () => {
       <section id="Mapa" className="py-12 md:py-16 bg-gradient-to-b from-gray-50 to-white w-full">
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary-green">
-            Mapa do Recanto Maestro
+            Mapa de Abrangência da AMPRM
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
