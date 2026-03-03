@@ -11,6 +11,7 @@ import { WhatsIcon } from "./components/elements/WhatsIcon";
 
 import video from "./assets/videos/video_apresentacao.mp4"
 import { Mapa } from "./components/sections/Mapa";
+import { Parceiros } from "./components/sections/Parceiros";
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
         <Sobre />
         <Proposito />
         <Beneficios />
+        <Parceiros />
         <Documentos />
         <Mapa />
       </Layout>
