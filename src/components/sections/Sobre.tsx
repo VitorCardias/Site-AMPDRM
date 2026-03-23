@@ -13,9 +13,10 @@ export const Sobre: React.FC = () => {
           <p className="mb-4 text-justify">
             Fundada em 2011, a Associação (originalmente AMRM) nasceu para promover a
             integração, qualidade de vida e bem-estar dos moradores, alicerçada nos
-            pilares da segurança, cultura, organização e boa convivialidade. Ao longo dos anos, assumimos responsabilidades cruciais como o fornecimento
-            e manutenção da água potável, a conservação das vias públicas e a
-            garantia de tranquilidade através da vigilância contratada. Em 2024, atualizamos nosso estatuto e nos tornamos a 
+            pilares da segurança, cultura, organização e boa convivialidade. Ao longo dos anos, 
+            assumimos responsabilidades cruciais como o fornecimento e a manutenção da água potável,
+            a conservação das vias públicas e a garantia de tranquilidade através da vigilância contratada. 
+            Em 2024, atualizamos nosso estatuto e nos tornamos a 
             <strong> Associação de Moradores e Proprietários do Distrito Recanto Maestro (AMPRM)</strong>,
             reafirmando nosso compromisso com todos os membros da comunidade.
           </p>
