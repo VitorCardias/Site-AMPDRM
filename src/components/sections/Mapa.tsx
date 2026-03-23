@@ -10,7 +10,7 @@ export const Mapa: React.FC = () => {
 
   const legendaItems = [
     { num: 22, nome: "Antonio Meneghetti Faculdade | Editora Ontopsicologica Universitaria | Recanto Café | Biblioteca Humanitas" },
-    { num: 23, nome: "Pizzaria e Sorveteria La Giacobina, Empório Zoriano" },
+    { num: 23, nome: "Cafeteria Caramelle, Empório Zoriano" },
     { num: 24, nome: "MB Farmácia" },
     { num: 25, nome: "Amfiteatro AMF" },
     { num: 26, nome: "Casa dos estudantes" },
@@ -22,9 +22,9 @@ export const Mapa: React.FC = () => {
     { num: 32, nome: "Escola de Gastronomia AMF" },
     { num: 33, nome: "Escola de Hotelaria e Turismo" },
     { num: 34, nome: "Sauna" },
-    { num: 35, nome: "Recantigno Condomínio Residencial" },
-    { num: 36, nome: "Associação Eslava de Ontopsicologia" },
-    { num: 37, nome: "Orquestra Jovem" },
+    { num: 35, nome: "Salão de Melodance" },
+    { num: 36, nome: "Condomínio Residencial Recantigno" },
+    { num: 37, nome: "Orquestra Jovem, FORMA" },
     { num: 38, nome: "Salão Branco Zorial" },
     { num: 39, nome: "Associação Moradores, Associação OntoArte" },
     { num: 40, nome: "Restaurante Di'Giordana" },
@@ -32,7 +32,7 @@ export const Mapa: React.FC = () => {
     { num: 42, nome: "Pousada Recanto" },
     { num: 43, nome: "Condomínio Residencial Águas Claras" },
     { num: 44, nome: "Fábrica de Cosméticos Lilium Recanto" },
-    { num: 45, nome: "Vinícola Domus Mea" },
+    { num: 45, nome: "Pizzaria La Giacobina, Vinícola Domus Mea" },
   ];
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.25, 3));

@@ -76,7 +76,7 @@ export const Documentos: React.FC = () => {
 
   // --- CONFIGURAÇÃO DOS DOCUMENTOS COM MÁSCARAS E VALIDAÇÕES ---
   const documentos: DocConfig[] = [
-    { name: 'Regulamento Interno', href: '/pdf/Regulamento_Interno.pdf', type: 'static' },
+    { name: 'Regimento Interno', href: '/pdf/Regulamento_Interno.pdf', type: 'static' },
     { name: 'Estatuto Social', href: '/pdf/Estatuto.pdf', type: 'static' },
     
     // 1. DESLIGAMENTO PF

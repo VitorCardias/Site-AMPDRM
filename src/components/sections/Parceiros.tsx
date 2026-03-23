@@ -28,6 +28,11 @@ const parceiros = [
     nome: "Termas Romanas",
     logo: "./TermasRomanas.svg",
   },
+  {
+    id: 6,
+    nome: "Glauber",
+    logo: "./Glauber.svg",
+  },
 ];
 
 export const Parceiros: React.FC = () => {
