@@ -81,7 +81,7 @@ export const Documentos: React.FC = () => {
     
     // 1. DESLIGAMENTO PF
     { 
-      name: 'Requerimento de Desligamento por Alienação', 
+      name: 'Requerimento de Desligamento por Venda de Imóvel', 
       href: '#', 
       type: 'dynamic_desligamento',
       fields: [
@@ -130,7 +130,7 @@ export const Documentos: React.FC = () => {
 
     // 2. DESLIGAMENTO PJ
     {
-      name: 'Requerimento de Desligamento por Locação (PJ)',
+      name: 'Requerimento de Comunicação de Locação de Imóvel (PJ)',
       href: '#',
       type: 'dynamic_locacao_pj',
       fields: [
