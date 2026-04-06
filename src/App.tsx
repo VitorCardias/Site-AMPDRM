@@ -4,6 +4,7 @@ import { Beneficios } from "./components/sections/Beneficios";
 import { Documentos } from "./components/sections/Documentos";
 import { Hero } from "./components/sections/Hero";
 import { Home } from "./components/sections/Home";
+import { Noticias } from "./components/sections/Noticias";
 import { Proposito } from "./components/sections/Proposito";
 import { Sobre } from "./components/sections/Sobre";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
@@ -53,6 +54,7 @@ function App() {
       <Layout title="Associação de Moradores RM">
         <Home />
         <Hero />
+        <Noticias />
         <Sobre />
         <Proposito />
         <Beneficios />
