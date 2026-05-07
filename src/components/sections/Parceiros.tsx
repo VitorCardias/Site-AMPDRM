@@ -51,7 +51,13 @@ export const Parceiros: React.FC = () => {
                 key={parceiro.id}
                 className="w-full flex items-center justify-center p-4 transition-all duration-300 md:hover:scale-110"
               >
-                <img src={parceiro.logo} alt={parceiro.nome} className="max-w-full h-auto max-h-40 md:max-h-62 object-contain md:grayscale md:hover:grayscale-0 transition-all duration-300" />
+                <img
+                  src={parceiro.logo}
+                  alt={parceiro.nome}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-w-full h-auto max-h-40 md:max-h-62 object-contain md:grayscale md:hover:grayscale-0 transition-all duration-300"
+                />
               </div>
             ))}
           </div>

@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
 import { FileText, Download, X, Loader2, AlertCircle } from 'lucide-react';
-import { pdf } from '@react-pdf/renderer';
-import { saveAs } from 'file-saver';
-import { PdfDesligamento } from '../../templates/PdfDesligamento';
-import { PdfDesligamentoLocacao } from '../../templates/PdfDesligamentoLocacao';
-import { PdfAdmissaoPF } from '../../templates/PdfAdmissaoPF';
-import { PdfAdmissaoPJ } from '../../templates/PdfAdmissaoPJ';
-import { PdfAtualizacaoCadastral } from '../../templates/PdfAtualizaCadastro';
-import { PdfLocacaoPF } from '../../templates/PdfLocacaoPF';
 
 // --- MÁSCARAS ---
 const masks = {
@@ -347,6 +339,10 @@ export const Documentos: React.FC = () => {
 
     try {
       let blob: Blob | null = null;
+      const [{ pdf }, { saveAs }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('file-saver')
+      ]);
 
       // ... (LÓGICA DE GERAÇÃO IGUAL AO ANTERIOR) ...
       // 1. DESLIGAMENTO PF
@@ -379,6 +375,7 @@ export const Documentos: React.FC = () => {
             tipoPendencia: (formData.tipoPendencia || 'nenhuma') as 'nenhuma' | 'com_data' | 'a_apurar',
             dataQuitacao: formData.dataQuitacao
         };
+        const { PdfDesligamento } = await import('../../templates/PdfDesligamento');
         blob = await pdf(<PdfDesligamento data={dados} />).toBlob();
       } 
       
@@ -403,6 +400,7 @@ export const Documentos: React.FC = () => {
           telefoneLocatario: formData.telefoneLocatario,
           emailLocatario: formData.emailLocatario,
         };
+        const { PdfDesligamentoLocacao } = await import('../../templates/PdfDesligamentoLocacao');
         blob = await pdf(<PdfDesligamentoLocacao data={dadosLocacao} />).toBlob();
       }
 
@@ -429,6 +427,7 @@ export const Documentos: React.FC = () => {
           cpfConta: formData.cpfConta,
           chavePix: formData.chavePix,
         };
+        const { PdfLocacaoPF } = await import('../../templates/PdfLocacaoPF');
         blob = await pdf(<PdfLocacaoPF data={dadosLocacaoPF} />).toBlob();
       }
 
@@ -449,6 +448,7 @@ export const Documentos: React.FC = () => {
             tipoVinculo: (formData.tipoVinculo || 'morador') as 'morador' | 'proprietario' | 'locatario' | 'empresario',
             dataInicioVinculo: formData.dataInicioVinculo
         };
+        const { PdfAdmissaoPF } = await import('../../templates/PdfAdmissaoPF');
         blob = await pdf(<PdfAdmissaoPF data={dadosAdmissao} />).toBlob();
       }
 
@@ -465,6 +465,7 @@ export const Documentos: React.FC = () => {
             tipoVinculo: (formData.tipoVinculo || 'empresario') as 'empresario' | 'proprietario' | 'locatario' | 'morador',
             dataInicioVinculo: formData.dataInicioVinculo
         };
+        const { PdfAdmissaoPJ } = await import('../../templates/PdfAdmissaoPJ');
         blob = await pdf(<PdfAdmissaoPJ data={dadosAdmissaoPJ} />).toBlob();
       }
 
@@ -476,6 +477,7 @@ export const Documentos: React.FC = () => {
             telefone: formData.telefone,
             email: formData.email
         };
+        const { PdfAtualizacaoCadastral } = await import('../../templates/PdfAtualizaCadastro');
         blob = await pdf(<PdfAtualizacaoCadastral data={dadosAtualizacao} />).toBlob();
       }
 

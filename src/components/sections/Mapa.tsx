@@ -102,6 +102,8 @@ export const Mapa: React.FC = () => {
                 <img 
                   src="./mapa.svg" 
                   alt="Mapa do Recanto Maestro" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-auto cursor-pointer rounded"
                   onClick={openModal}
                   style={{ display: 'block' }}
