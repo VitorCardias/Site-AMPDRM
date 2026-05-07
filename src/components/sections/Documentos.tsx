@@ -7,6 +7,7 @@ import { PdfDesligamentoLocacao } from '../../templates/PdfDesligamentoLocacao';
 import { PdfAdmissaoPF } from '../../templates/PdfAdmissaoPF';
 import { PdfAdmissaoPJ } from '../../templates/PdfAdmissaoPJ';
 import { PdfAtualizacaoCadastral } from '../../templates/PdfAtualizaCadastro';
+import { PdfLocacaoPF } from '../../templates/PdfLocacaoPF';
 
 // --- MÁSCARAS ---
 const masks = {
@@ -64,7 +65,7 @@ type FieldConfig = {
 type DocConfig = {
   name: string;
   href: string;
-  type: 'static' | 'dynamic_desligamento' | 'dynamic_locacao_pj' | 'dynamic_admissao_pf' | 'dynamic_admissao_pj' | 'dynamic_atualizacao';
+  type: 'static' | 'dynamic_desligamento' | 'dynamic_locacao_pj' | 'dynamic_locacao_pf' | 'dynamic_admissao_pf' | 'dynamic_admissao_pj' | 'dynamic_atualizacao';
   fields?: FieldConfig[];
 };
 
@@ -154,7 +155,35 @@ export const Documentos: React.FC = () => {
       ]
     },
 
-    // 3. ADMISSÃO PF
+    // 3. LOCACAO PF
+    {
+      name: 'Requerimento de Comunicação de Locação de Imóvel (PF)',
+      href: '#',
+      type: 'dynamic_locacao_pf',
+      fields: [
+        { id: 'nome', label: 'Nome Completo', type: 'text', validation: 'textOnly', required: true },
+        { id: 'nacionalidade', label: 'Nacionalidade', type: 'text', validation: 'textOnly', required: true },
+        { id: 'estadoCivil', label: 'Estado Civil', type: 'text', validation: 'textOnly', required: true },
+        { id: 'profissao', label: 'Profissão', type: 'text', validation: 'textOnly', required: true },
+        { id: 'cpf', label: 'CPF', type: 'text', mask: 'cpf', required: true },
+        { id: 'rgPassaporte', label: 'RG ou Passaporte', type: 'text', required: true },
+        { id: 'endereco', label: 'Endereço Completo', type: 'text', required: true },
+        { id: 'municipio', label: 'Município', type: 'text', validation: 'textOnly', required: true },
+        { id: 'pais', label: 'País', type: 'text', validation: 'textOnly', required: true },
+        { id: 'cep', label: 'CEP', type: 'text', mask: 'cep', required: true },
+        { id: 'telefone', label: 'Telefone', type: 'tel', mask: 'phone', required: true },
+        { id: 'email', label: 'E-mail', type: 'email', validation: 'email', required: true },
+        { id: 'matriculaImovel', label: 'Matrícula do Imóvel', type: 'text', required: true },
+        { id: 'titularConta', label: 'Titular da Conta', type: 'text', required: true },
+        { id: 'banco', label: 'Banco', type: 'text', required: true },
+        { id: 'agencia', label: 'Agência', type: 'text', required: true },
+        { id: 'contaBancaria', label: 'Conta Bancária', type: 'text', required: true },
+        { id: 'cpfConta', label: 'CPF da Conta', type: 'text', mask: 'cpf', required: true },
+        { id: 'chavePix', label: 'Chave Pix', type: 'text', required: true },
+      ]
+    },
+
+    // 4. ADMISSÃO PF
     {
       name: 'Requerimento de Ingresso/Permanência (PF)',
       href: '#',
@@ -377,7 +406,33 @@ export const Documentos: React.FC = () => {
         blob = await pdf(<PdfDesligamentoLocacao data={dadosLocacao} />).toBlob();
       }
 
-      // 3. ADMISSÃO PF
+      // 3. LOCACAO PF
+      else if (selectedDoc.type === 'dynamic_locacao_pf') {
+        const dadosLocacaoPF = {
+          nome: formData.nome,
+          nacionalidade: formData.nacionalidade,
+          estadoCivil: formData.estadoCivil,
+          profissao: formData.profissao,
+          cpf: formData.cpf,
+          rgPassaporte: formData.rgPassaporte,
+          endereco: formData.endereco,
+          municipio: formData.municipio,
+          pais: formData.pais,
+          cep: formData.cep,
+          telefone: formData.telefone,
+          email: formData.email,
+          matriculaImovel: formData.matriculaImovel,
+          titularConta: formData.titularConta,
+          banco: formData.banco,
+          agencia: formData.agencia,
+          contaBancaria: formData.contaBancaria,
+          cpfConta: formData.cpfConta,
+          chavePix: formData.chavePix,
+        };
+        blob = await pdf(<PdfLocacaoPF data={dadosLocacaoPF} />).toBlob();
+      }
+
+      // 4. ADMISSÃO PF
       else if (selectedDoc.type === 'dynamic_admissao_pf') {
         const dadosAdmissao = {
             nome: formData.nome,
