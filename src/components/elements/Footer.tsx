@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="w-5 h-5" />
-                <span className="text-gray-300"><a href="https://wa.me/555596803636" target="_blank" rel="noopener noreferrer">(55) 9680-3636</a></span>
+                <span className="text-gray-300"><a href="https://wa.me/555599503449" target="_blank" rel="noopener noreferrer">(55) 9950-3449</a></span>
               </li>
             </ul>
           </div>

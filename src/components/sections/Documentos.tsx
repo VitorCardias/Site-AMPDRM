@@ -506,7 +506,7 @@ export const Documentos: React.FC = () => {
             </p>
             <ul className="mt-6 text-gray-700 list list-inside space-y-2">
                 <li><strong>Email:</strong> <a href="mailto:amrm@recantomaestro.com.br">amrm@recantomaestro.com.br</a></li>
-                <li><strong>WhatsApp:</strong> <a href="https://wa.me/555596803636" target="_blank" rel="noopener noreferrer">(55) 9680-3636</a></li>
+                <li><strong>WhatsApp:</strong> <a href="https://wa.me/555599503449" target="_blank" rel="noopener noreferrer">(55) 9950-3449</a></li>
             </ul>
           </div>
          <div className="space-y-4">

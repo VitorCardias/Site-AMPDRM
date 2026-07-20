@@ -1,5 +1,5 @@
 export const WhatsIcon: React.FC = () => {
-  const phoneNumber = "555596803636"; // Substituir pelo número real no formato internacional
+  const phoneNumber = "555599503449"; // Substituir pelo número real no formato internacional
   const message = "Olá! Gostaria de mais informações."; // Mensagem padrão
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
